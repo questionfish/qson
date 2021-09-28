@@ -59,6 +59,9 @@ func ToJSON(query string) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
+		if tempMap == nil {
+			continue
+		}
 		builder = merge(builder, tempMap)
 	}
 	return json.Marshal(builder)
@@ -76,6 +79,9 @@ func queryToMap(param string) (map[string]interface{}, error) {
 	rawKey, rawValue, err := splitKeyAndValue(param)
 	if err != nil {
 		return nil, err
+	}
+	if rawValue == "" {
+		return nil, nil
 	}
 	rawValue, err = url.QueryUnescape(rawValue)
 	if err != nil {
@@ -117,6 +123,9 @@ func queryToMap(param string) (map[string]interface{}, error) {
 	ret := make(map[string]interface{}, 0)
 	ret[key], err = queryToMap(buildNewKey(rawKey) + "=" + rawValue)
 	if err != nil {
+		return nil, err
+	}
+	if ret[key] == nil {
 		return nil, err
 	}
 
